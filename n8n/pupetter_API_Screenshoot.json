@@ -1,0 +1,238 @@
+{
+  "name": "pupetter-API-Screenshoot",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -460,
+        -40
+      ],
+      "id": "7256ac8a-3732-464a-b5eb-96e77041d426",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "screenshot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        340,
+        -460
+      ],
+      "id": "82e8655e-6504-4d10-a257-401879bbedb0",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.1.10:9595/script",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "https://www.amazon.com"
+            },
+            {
+              "name": "login_selector"
+            },
+            {
+              "name": "password_selector"
+            },
+            {
+              "name": "login"
+            },
+            {
+              "name": "password"
+            },
+            {
+              "name": "script",
+              "value": "document.querySelector(\"#twotabsearchtextbox\").value = \"Xiaomi\"; document.querySelector(\"#nav-search-submit-button\").click();"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        60
+      ],
+      "id": "73057682-ee99-4d7b-809e-36d810553e38",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "html": "{{ $json.html }}"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        40
+      ],
+      "id": "37c9cfbd-ef14-4e5e-a25e-32a790b9304a",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "operation": "html",
+        "binaryPropertyName": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        500,
+        40
+      ],
+      "id": "a2aba837-9b6c-43a6-b935-05403d3ac042",
+      "name": "Convert to File1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.1.10:9595/screenshot",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "https://www.amazon.com/"
+            },
+            {
+              "name": "fullPage",
+              "value": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        -440
+      ],
+      "id": "150b6aed-8d25-487b-9e9f-95569d26cc26",
+      "name": "Requette-CaptureFullScreen"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://192.168.1.10:9595/screenshot",
+        "sendBody": true,
+        "contentType": "raw",
+        "body": "{   \"url\": \"https://example.com\",   \"clip\": {     \"x\": 100,     \"y\": 200,     \"width\": 800,     \"height\": 600   } }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -20,
+        -200
+      ],
+      "id": "62dfc326-33d7-4f63-99b1-6ea1acd29311",
+      "name": "Requette-ZoneEcran"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "screenshot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        280,
+        -220
+      ],
+      "id": "22630750-1f44-44f9-9147-bbfb748343ee",
+      "name": "Convert to File2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Requette-CaptureFullScreen",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Requette-ZoneEcran",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Convert to File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requette-CaptureFullScreen": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Requette-ZoneEcran": {
+      "main": [
+        [
+          {
+            "node": "Convert to File2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01c65e6d-d024-4f94-90c4-ee640c359a47",
+  "meta": {
+    "instanceId": "a7fbe77f039104010b8df3ead7f4bdc01ddc511603f464dbd46f0d4c2f84ce86"
+  },
+  "id": "6ohAmreqYrOWVzee",
+  "tags": []
+}
