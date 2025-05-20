@@ -1,30 +1,77 @@
-# Puppeteer-FastAPI-n8n
+# Puppeteer-FastAPI-n8n-Bot
 
-Automatisation web avec Puppeteer (Node.js) et FastAPI (Python), interconnectés avec Docker. Idéal pour scraper, exécuter des scripts ou capturer des pages web.
+This project combines **Puppeteer** (Node.js) and **FastAPI** (Python) to automate browser interactions via a unified API, fully orchestrated with Docker and integrable with [n8n](https://n8n.io).
 
-## 🚀 Endpoints disponibles
+## 🔍 Features
 
-- `POST /script` → Exécute du JavaScript sur une page et retourne le HTML
-- `POST /screenshot` → Capture la page en base64
+- `POST /screenshot` – Take full page, clipped, or element-based screenshots
+- `POST /script` – Execute JavaScript in-page or trigger automation sequences
+- Custom Puppeteer control through FastAPI proxy
+- Easily extendable and n8n-compatible
 
-## ⚙️ Installation
+## 📦 Architecture
+
+```
+📁 puppeteer-fastapi-n8n-bot/
+├── docker-compose.yml
+├── fastapi/
+│   ├── Dockerfile
+│   ├── main.py
+│   └── requirements.txt
+└── server/
+    ├── Dockerfile
+    ├── index.js
+    └── package.json
+```
+
+## 🚀 Usage
+
+### Build & Run
 
 ```bash
 docker compose build
-docker compose up
+docker compose up -d
 ```
 
-## 📦 Exemple curl
+### Example: Screenshot Request
 
 ```bash
 curl -X POST http://localhost:8000/screenshot \
   -H "Content-Type: application/json" \
-  -d '{"url": "https://example.com"}'
+  -d '{
+    "url": "https://example.com",
+    "fullPage": true
+}'
 ```
 
-## 🧠 Intégration n8n
+### Example: Script Request
 
-Utilisez un noeud HTTP avec :
-- URL : http://fastapi:8000/screenshot
-- Méthode : POST
-- Body JSON : `{ "url": "https://example.com" }`
+```bash
+curl -X POST http://localhost:8000/script \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://example.com",
+    "actions": [
+      "await page.click('#menu')",
+      "await page.waitForSelector('#content')"
+    ]
+}'
+```
+
+## 🧩 n8n Integration
+
+Use the HTTP Request node in n8n to:
+
+- Call the `/script` or `/screenshot` endpoints
+- Chain browser automation workflows
+- Extract and process content automatically
+
+## 🛠️ Dev Notes
+
+- Puppeteer runs headless inside Docker
+- Make sure your selectors exist before triggering actions
+- To troubleshoot, check `docker-compose logs`
+
+## 📄 License
+
+MIT License. Use it, fork it, improve it.
